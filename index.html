@@ -1,0 +1,206 @@
+<!doctype html >
+<html>
+	<head>
+		<meta charset=utf-8 />
+		<title> Predator Prey Game Simulation </title>
+		<script language="javascript" type="text/javascript" src="flot/jquery.js"></script>
+		<script language="javascript" type="text/javascript" src="flot/jquery.flot.js"></script>
+		<script type="text/javascript">
+			function populate(type, amount, fields){
+				for (x=0; x<amount; x++){
+					while(true){
+						var pos = Math.floor(Math.random()*37);
+						if (fields[pos] === ""){
+							fields[pos] = type;
+							break;
+							}
+						}
+					}
+				return fields;
+				}
+
+			function predator_plays(input){
+				n = Math.floor(Math.random()*37);
+				if (input[n] ===  "prey"){
+					input[n] = "predator";
+				}
+				else{
+					if (input.indexOf("predator") != -1){
+						input[input.indexOf("predator")] = "";
+					}
+				}
+				return input
+			}
+
+			function prey_plays(input){
+				n = Math.floor(Math.random()*37);
+				if (input[n] ===  ""){
+					input[n] = "prey";
+				}
+				else if(input[n] === "prey"){
+					if (input.indexOf("") != -1){
+						input[input.indexOf("")] = "prey";
+					}
+				}
+				return input
+			}
+			
+			function count(arr,element) {
+				var count = 0;
+    
+				for ( var i = 0; i < arr.length; i++ ) {
+					if ( arr[i] == element ) {
+					count++;
+					}
+				}
+				return count;
+			}
+
+			function play(predator, prey, steps, period){
+				if (parseInt(predator) + parseInt(prey) > 36){
+					alert("The sum of predator and prey population has to be smaller than the number of fields(36)");
+					return false;
+				}
+				$("#table_steps").html("<th> Step </th>"); //reset table
+				$("#table_predator").html("<th> Predator </th>"); //reset table
+				$("#table_prey").html("<th> Prey </th>"); //reset table
+				var fields = [];
+				for (x=0; x<36; x++){
+					fields.push("");
+				}	
+				fields = populate("predator", predator, fields);
+				fields = populate("prey", prey, fields);
+				predator_graph = [];
+				prey_graph = [];
+				for (x=0; x<=period; x++){
+					if (x%steps === 0){
+						predator_graph.push([x, count(fields, "predator")]);
+						prey_graph.push([x, count(fields, "prey")]);
+						$("#table_steps").append("<td>" + x + "</td>");
+						$("#table_predator").append("<td>" + count(fields, "predator") + "</td>");
+						$("#table_prey").append("<td>" + count(fields, "prey") + "</td>");
+					}
+					fields = predator_plays(fields);
+					fields = prey_plays(fields);
+				}
+				$.plot($("#placeholder"), [{label: "Predator", data: predator_graph},{label: "Prey", data:prey_graph}]);
+			}
+		$(document).ready(function(){
+				play(10,10, 5, 200);
+		});
+	</script>
+
+		<style>
+			td, th {
+				border-color: black;
+				border-style: solid;
+				border-width: 1px;
+				border-spacing:0;
+				padding: 5px;
+			}
+
+			table {
+				border-color: black;
+				border-style: solid;
+				border-width: 2px;
+				border-spacing: 0;
+			}
+
+			#placeholder table {
+				border-width:0;
+			}
+			#placeholder td, #placeholder tr {
+				border-width:0;
+			}
+
+			#settings {
+				margin-left: 20px;
+			}
+
+			#settings {
+				margin-left: 20px;
+				float: left;
+			}
+			#value-tabel {
+				width: 100%;
+			}
+			#value-table {
+				width: 100%;
+				float: left;
+			}
+			#rules {
+				width: 100%;
+				float: left;
+			}
+			footer {
+				width: 100%;
+				float: left;
+			}
+		</style>
+	</head>
+
+	<body>
+		<h1> Predator Prey Game Simulation </h1>
+		<h2> Graph </h2>
+		<div id="placeholder" style="width:800px; height:400px; float:left;"></div>
+		<div id="settings">
+			<h2> Settings </h2>
+			<form action='javascript:play($("#predator").val(), $("#prey").val(), $("#steps").val(), $("#period").val())'>
+				<table>
+					<tr>
+						<td> Predator population</td>
+						<td> <input type="number" value="10" name="predator" id="predator"/> </td>
+					</tr>
+					<tr>
+						<td> Prey population </td>
+						<td> <input type="number" value="10" name="prey" id="prey" /></td>
+					</tr>
+					<tr>
+						<td> Steps </td>
+						<td> <input type="number" value="5" name="steps" id="steps" /></td>
+					</tr>
+					<tr>
+						<td> Period </td>
+						<td> <input type="number" value="200" name="period" id="period" step="10"/></td>
+					</tr>
+				</table>
+				<input type="submit" />
+			</form>
+		</div>
+		<div id="value-table">
+			<h2> Values </h2>
+			<table style="margin-left:10px;">
+				<tr id="table_steps"> <th> Step </th> </tr>
+				<tr id="table_predator"><th> Predator </th> </tr>
+				<tr id="table_prey"><th>Prey</th></tr>
+			</table>
+		</div>
+		<div id="rules">
+			<h2> Rules </h2>
+			<ul>
+				<li> There is a predator and a prey player </li>
+				<li> They both take turns successively </li>
+				<li> A random field is picked on each turn </li>
+				<li> The rules for the prey population are as follows:</li>
+				<ul>
+					<li> If the field is empty, the animal finds food and sets foot on the field </li>
+					<li> If there is another prey animal on the field the animal searches for an empty field to live on </li>
+					<li> If there is a predator on the field the animal does not survive and nothing is added to the board</li>
+				</ul>
+				<li> The rules for the predator population are as follows:</li>
+				<ul>
+					<li> If the field is empty, the predator does not find any food and dies (does not appear on the field)</li>
+					<li> If there is prey on the field, the predator eats it and takes its place </li>
+					<li> If there is another predator on the field it is taken from the field (it dies) and no new one is added </li>
+				</ul>
+			</ul>
+
+			<p> The simulation does all this. You can set the number of animals that are on the field at the beginning as well as the duration of the game and the number of turns after which the
+			    numbers will be added to the graph and the table. Since this is usually played with two dice there are 36 (6x6) fields.
+			</p>
+		</div>
+		<footer> This work by is licensed under the <a href="http://www.gnu.org/licenses/gpl-3.0"> GPLv3 </a><br />
+			 This essentially means that you are allowed to view, share and change the source code as long as you do not change the license.
+		</footer>
+	</body>
+</html>
