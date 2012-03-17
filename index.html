@@ -202,5 +202,17 @@
 		<footer> This work by is licensed under the <a href="http://www.gnu.org/licenses/gpl-3.0"> GPLv3 </a><br />
 			 This essentially means that you are allowed to view, share and change the source code as long as you do not change the license.
 		</footer>
+		<!-- Piwik --> 
+		<script type="text/javascript">
+		var pkBaseURL = (("https:" == document.location.protocol) ? "https://ia-bs.de/piwik/" : "http://ia-bs.de/piwik/");
+		document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
+		</script><script type="text/javascript">
+		try {
+		var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 2);
+		piwikTracker.trackPageView();
+		piwikTracker.enableLinkTracking();
+		} catch( err ) {}
+		</script><noscript><p><img src="http://ia-bs.de/piwik/piwik.php?idsite=2" style="border:0" alt="" /></p></noscript>
+		<!-- End Piwik Tracking Code -->
 	</body>
 </html>
